@@ -1,9 +1,22 @@
 const express = require('express')
+const morgan = require('morgan')
+const cors = require('cors');
 const app = express()
 let notes = require('./src/data/notes')
 
 app.use(express.json())
-app.use(requestLogger)
+app.use(cors())
+app.use(morgan((tokens, req, res) => {
+  const body = req.body
+  return [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res),
+    tokens['content-length'], '-',
+    tokens['response-time'](req, res), 'ms',
+    JSON.stringify(body)
+  ].join(' ')
+}))
 
 app.get('/', (req, res) => {
   res.send(`<h1>Welcome to Notes App</h1>`)
@@ -68,8 +81,6 @@ app.post('/api/notes', (req, res) => {
   res.status(200)
   res.json(notes)
 })
-
-app.use(unknownEndpoint)
 
 const port = 3001
 
