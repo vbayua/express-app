@@ -2,7 +2,20 @@ const express = require('express')
 const app = express()
 let notes = require('./src/data/notes')
 
+const requestLogger = (request, response, next) => {
+  console.log('Method:', request.method)
+  console.log('Path:  ', request.path)
+  console.log('Body:  ', request.body)
+  console.log('---')
+  next()
+}
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
 app.use(express.json())
+app.use(requestLogger)
 
 app.get('/', (req, res) => {
   res.send(`<h1>Welcome to Notes App</h1>`)
@@ -67,6 +80,8 @@ app.post('/api/notes', (req, res) => {
   res.status(200)
   res.json(notes)
 })
+
+app.use(unknownEndpoint)
 
 const port = 3001
 
