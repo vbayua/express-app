@@ -24,15 +24,11 @@ app.get('/', (req, res) => {
 
 app.get('/api/notes', (req, res) => {
   const query = req.query.content
-  if (notes) {
-    let filteredNotes = query
-      ? notes.filter(note => note.content.toLowerCase().includes(query.toLowerCase()))
-      : notes
-    res.status(200)
-    res.json(filteredNotes)
-  } else {
-    res.status(400).end('No data')
-  }
+  let filteredNotes = query
+    ? notes.filter(note => note.content.toLowerCase().includes(query.toLowerCase()))
+    : notes
+  res.status(200)
+  res.json(filteredNotes)
 })
 
 app.get('/api/notes/:id', (req, res) => {
@@ -62,8 +58,6 @@ const generateId = () => {
 
 app.post('/api/notes', (req, res) => {
   const body = req.body
-  console.log(body)
-
   if (!body.content) {
     return res.status(400).json({
       error: 'content is missing'
@@ -79,10 +73,10 @@ app.post('/api/notes', (req, res) => {
   notes = notes.concat(note)
 
   res.status(200)
-  res.json(notes)
+  res.json(note)
 })
 
-const port = 3001
+const port = process.env.PORT || 3001
 
 app.listen(port, () => {
   console.log(`Server is running on ${port}`)
